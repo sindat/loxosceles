@@ -33,11 +33,10 @@ def connect_to_github():
 
     return gh,repo,branch
 
-connect_to_github()
-
 def get_file_contents(filepath):
 
     gh,repo,branch = connect_to_github()
+    
     tree = branch.commit.commit.tree.recurse()
     
     for filename in tree.tree:
@@ -49,6 +48,8 @@ def get_file_contents(filepath):
             return blob.content
 
     return None
+
+get_file_contents(spider_config)
 
 #get the config json and decode it
 def get_spider_config():

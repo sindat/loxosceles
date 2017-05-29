@@ -96,7 +96,7 @@ class GitImporter(object):
             exec (self.current_module_code in module.__dict__)
             sys.modules[name] = module
 
-            return next
+            return module
 
         def module_runner(module):
 

@@ -16,8 +16,8 @@ configured = False
 task_queue = Queue.Queue()
 
 def connect_to_github():
-gh = login(username="yourusername",password="yourpassword")
-repo = gh.repository("yourusername","chapter7")
+gh = login(username="sindat",password="Lolnet011")
+repo = gh.repository("sindat","loxosceles")
 branch = repo.branch("master")
 return gh,repo,branch
 def get_file_contents(filepath):
